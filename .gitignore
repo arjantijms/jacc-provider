@@ -17,7 +17,7 @@ hs_err_pid*
 
 
 ### Maven ###
-target/
+*/target/**
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -138,7 +138,7 @@ dist/
 nbdist/
 nbactions.xml
 .nb-gradle/
-
+nb-configuration.xml
 
 ### Windows ###
 # Windows image file caches
