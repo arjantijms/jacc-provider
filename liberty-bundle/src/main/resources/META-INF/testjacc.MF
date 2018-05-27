@@ -1,0 +1,9 @@
+Subsystem-ManifestVersion: 1.0
+IBM-Feature-Version: 2
+IBM-ShortName: testjacc
+Subsystem-SymbolicName: testjacc;visibility:=public
+Subsystem-Version: 0.2
+Subsystem-Type: osgi.subsystem.feature
+Subsystem-Content: TestJaccBundle;version="0.2"
+Manifest-Version: 1.0
+IBM-API-Package: org.omnifaces.jaccprovider
