@@ -21,8 +21,6 @@ import org.osgi.service.component.annotations.Deactivate;
 )
 public class MyJaccProviderService implements ProviderService {
 
-	private Map<String, String> configProps;
-
 	@Override
 	public Policy getPolicy() {
 		return new TestPolicy();
@@ -49,7 +47,6 @@ public class MyJaccProviderService implements ProviderService {
 
 	@Activate
 	protected void activate(ComponentContext cc) {
-		configProps = (Map<String, String>) cc.getProperties();
 	}
 
 	@Deactivate
