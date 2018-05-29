@@ -115,16 +115,16 @@ public class TestRoleMapper {
     }
 
     /**
-	 * Tries to get the roles from the principals list and only if it fails,
-	 * fallbacks to looking at the Subject.
-	 * 
-	 * Liberty is the only known server that falls back.
-	 *
-	 * @param principals
-	 * @param subject
-	 * @return
-	 */
-	public List<String> getMappedRoles(Iterable<Principal> principals, Subject subject) {
+     * Tries to get the roles from the principals list and only if it fails,
+     * fallbacks to looking at the Subject.
+     * 
+     * Liberty is the only known server that falls back.
+     *
+     * @param principals
+     * @param subject
+     * @return
+     */
+    public List<String> getMappedRoles(Iterable<Principal> principals, Subject subject) {
 
         // Extract the list of groups from the principals. These principals typically contain
         // different kind of principals, some groups, some others. The groups are unfortunately vendor
@@ -298,7 +298,7 @@ public class TestRoleMapper {
      * Extracts the roles from the vendor specific principals. SAD that this is needed :(
      *
      * @param principals
-	 * @param subject the (possibly null) subject
+     * @param subject the (possibly null) subject
      * @return
      */
     public List<String> getGroups(Iterable<Principal> principals, Subject subject) {
@@ -311,21 +311,21 @@ public class TestRoleMapper {
                 return groups;
             }
         }
-		
-		if(subject == null) {
-			return groups;
-		}
-		
-		@SuppressWarnings("rawtypes")
-		Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
+        
+        if(subject == null) {
+            return groups;
+    }
+        
+    @SuppressWarnings("rawtypes")
+    Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
         if (tables != null && !tables.isEmpty()) {
-			@SuppressWarnings("rawtypes")
-			Hashtable table = tables.iterator().next();
-			
-			groups = (List<String>) table.get("com.ibm.wsspi.security.cred.groups");
-			
-			return groups != null ? groups : Collections.emptyList();
-		}
+            @SuppressWarnings("rawtypes")
+            Hashtable table = tables.iterator().next();
+            
+            groups = (List<String>) table.get("com.ibm.wsspi.security.cred.groups");
+            
+            return groups != null ? groups : Collections.emptyList();
+        }
 
         return groups;
     }

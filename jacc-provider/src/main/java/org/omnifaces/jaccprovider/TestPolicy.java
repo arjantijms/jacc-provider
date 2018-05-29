@@ -49,13 +49,13 @@ public class TestPolicy extends Policy {
                 return true;
             }
         }
-		
-		Subject subject;
-		try {
-			subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
-		} catch (PolicyContextException ex) {
-			throw new RuntimeException(ex);
-		}
+        
+        Subject subject;
+        try {
+            subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+        } catch (PolicyContextException ex) {
+            throw new RuntimeException(ex);
+        }
          
         if (hasAccessViaRoles(policyConfiguration.getPerRolePermissions(), roleMapper.getMappedRoles(currentUserPrincipals, subject), permission)) {
             // Access is granted via role. Note that if this returns false it doesn't mean the permission is not
@@ -99,19 +99,19 @@ public class TestPolicy extends Policy {
         collectPermissions(policyConfiguration.getUncheckedPermissions(), permissions, excludedPermissions);
  
         
-		Subject subject;
-		try {
-			subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
-		} catch (PolicyContextException ex) {
-			throw new RuntimeException(ex);
-		}
-		
-		// Finally get the permissions for each role *that the current user has*
+        Subject subject;
+        try {
+            subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+        } catch (PolicyContextException ex) {
+            throw new RuntimeException(ex);
+        }
+        
+        // Finally get the permissions for each role *that the current user has*
         //
         // Note that the principles that are put into the ProtectionDomain object are those from the current user.
         // (for a Server application, passing in a Subject would have been more logical, but the Policy class was
         // made for Java SE with code-level security in mind). The Subject needs to be passed anyway as some servers
-		// (namely WebSphere Liberty/OpenLiberty) are only accesible from the Subject
+        // (namely WebSphere Liberty/OpenLiberty) are only accesible from the Subject
         Map<String, Permissions> perRolePermissions = policyConfiguration.getPerRolePermissions();
         for (String role : roleMapper.getMappedRoles(domain.getPrincipals(), subject)) {
             if (perRolePermissions.containsKey(role)) {
