@@ -316,8 +316,8 @@ public class TestRoleMapper {
             return groups;
     }
         
-    @SuppressWarnings("rawtypes")
-    Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
+        @SuppressWarnings("rawtypes")
+        Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
         if (tables != null && !tables.isEmpty()) {
             @SuppressWarnings("rawtypes")
             Hashtable table = tables.iterator().next();
