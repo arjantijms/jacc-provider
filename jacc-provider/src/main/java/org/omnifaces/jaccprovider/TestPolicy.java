@@ -10,8 +10,13 @@ import java.security.Permissions;
 import java.security.Policy;
 import java.security.Principal;
 import java.security.ProtectionDomain;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import javax.security.auth.Subject;
+import javax.security.jacc.PolicyContext;
+import javax.security.jacc.PolicyContextException;
  
 public class TestPolicy extends Policy {
      
@@ -44,8 +49,15 @@ public class TestPolicy extends Policy {
                 return true;
             }
         }
+        
+        Subject subject;
+        try {
+            subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+        } catch (PolicyContextException ex) {
+            throw new RuntimeException(ex);
+        }
          
-        if (hasAccessViaRoles(policyConfiguration.getPerRolePermissions(), roleMapper.getMappedRolesFromPrincipals(currentUserPrincipals), permission)) {
+        if (hasAccessViaRoles(policyConfiguration.getPerRolePermissions(), roleMapper.getMappedRoles(currentUserPrincipals, subject), permission)) {
             // Access is granted via role. Note that if this returns false it doesn't mean the permission is not
             // granted. A role can only grant, not take away permissions.
             return true;
@@ -86,13 +98,22 @@ public class TestPolicy extends Policy {
         // Thirdly, get all unchecked permissions
         collectPermissions(policyConfiguration.getUncheckedPermissions(), permissions, excludedPermissions);
  
+        
+        Subject subject;
+        try {
+            subject = (Subject)PolicyContext.getContext("javax.security.auth.Subject.container");
+        } catch (PolicyContextException ex) {
+            throw new RuntimeException(ex);
+        }
+        
         // Finally get the permissions for each role *that the current user has*
         //
         // Note that the principles that are put into the ProtectionDomain object are those from the current user.
         // (for a Server application, passing in a Subject would have been more logical, but the Policy class was
-        // made for Java SE with code-level security in mind)
+        // made for Java SE with code-level security in mind). The Subject needs to be passed anyway as some servers
+        // (namely WebSphere Liberty/OpenLiberty) are only accesible from the Subject
         Map<String, Permissions> perRolePermissions = policyConfiguration.getPerRolePermissions();
-        for (String role : roleMapper.getMappedRolesFromPrincipals(domain.getPrincipals())) {
+        for (String role : roleMapper.getMappedRoles(domain.getPrincipals(), subject)) {
             if (perRolePermissions.containsKey(role)) {
                 collectPermissions(perRolePermissions.get(role), permissions, excludedPermissions);
             }

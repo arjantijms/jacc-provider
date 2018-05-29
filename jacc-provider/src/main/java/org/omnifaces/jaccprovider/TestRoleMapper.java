@@ -10,7 +10,9 @@ import java.security.Principal;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -104,20 +106,30 @@ public class TestRoleMapper {
         }
     }
 
-    public List<String> getMappedRolesFromPrincipals(Principal[] principals) {
-        return getMappedRolesFromPrincipals(asList(principals));
+    public List<String> getMappedRoles(Principal[] principals, Subject subject) {
+        return getMappedRoles(asList(principals), subject);
     }
 
     public boolean isAnyAuthenticatedUserRoleMapped() {
         return anyAuthenticatedUserRoleMapped;
     }
 
-    public List<String> getMappedRolesFromPrincipals(Iterable<Principal> principals) {
+    /**
+     * Tries to get the roles from the principals list and only if it fails,
+     * fallbacks to looking at the Subject.
+     * 
+     * Liberty is the only known server that falls back.
+     *
+     * @param principals
+     * @param subject
+     * @return
+     */
+    public List<String> getMappedRoles(Iterable<Principal> principals, Subject subject) {
 
         // Extract the list of groups from the principals. These principals typically contain
         // different kind of principals, some groups, some others. The groups are unfortunately vendor
         // specific.
-        List<String> groups = getGroupsFromPrincipals(principals);
+        List<String> groups = getGroups(principals, subject);
 
         // Map the groups to roles. E.g. map "admin" to "administrator". Some servers require this.
         return mapGroupsToRoles(groups);
@@ -165,7 +177,7 @@ public class TestRoleMapper {
                 if (roleToSubjectMap.containsKey(role)) {
                     Set<Principal> principals = roleToSubjectMap.get(role).getPrincipals();
 
-                    List<String> groups = getGroupsFromPrincipals(principals);
+                    List<String> groups = getGroups(principals, null);
                     for (String group : groups) {
                         if (!groupToRoles.containsKey(group)) {
                             groupToRoles.put(group, new ArrayList<String>());
@@ -286,9 +298,10 @@ public class TestRoleMapper {
      * Extracts the roles from the vendor specific principals. SAD that this is needed :(
      *
      * @param principals
+     * @param subject the (possibly null) subject
      * @return
      */
-    public List<String> getGroupsFromPrincipals(Iterable<Principal> principals) {
+    public List<String> getGroups(Iterable<Principal> principals, Subject subject) {
         List<String> groups = new ArrayList<>();
 
         for (Principal principal : principals) {
@@ -297,6 +310,21 @@ public class TestRoleMapper {
                 // when we know there's only 1 principal holding all the groups
                 return groups;
             }
+        }
+        
+        if(subject == null) {
+            return groups;
+    }
+        
+        @SuppressWarnings("rawtypes")
+        Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
+        if (tables != null && !tables.isEmpty()) {
+            @SuppressWarnings("rawtypes")
+            Hashtable table = tables.iterator().next();
+            
+            groups = (List<String>) table.get("com.ibm.wsspi.security.cred.groups");
+            
+            return groups != null ? groups : Collections.emptyList();
         }
 
         return groups;
