@@ -1,5 +1,6 @@
 package org.omnifaces.jaccprovider;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.list;
 
 import java.lang.reflect.InvocationHandler;
@@ -10,7 +11,6 @@ import java.security.Principal;
 import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
@@ -116,13 +116,13 @@ public class TestRoleMapper {
 
     /**
      * Tries to get the roles from the principals list and only if it fails,
-     * fallbacks to looking at the Subject.
-     * 
+     * falls back to looking at the Subject.
+     *
      * Liberty is the only known server that falls back.
      *
-     * @param principals
-     * @param subject
-     * @return
+     * @param principals the primary entities to look in for roles
+     * @param subject the fall back to use if looking at principals fails
+     * @return a list of mapped roles
      */
     public List<String> getMappedRoles(Iterable<Principal> principals, Subject subject) {
 
@@ -295,12 +295,13 @@ public class TestRoleMapper {
     }
 
     /**
-     * Extracts the roles from the vendor specific principals. SAD that this is needed :(
+     * Extracts the groups from the vendor specific principals.
      *
-     * @param principals
-     * @param subject the (possibly null) subject
-     * @return
+     * @param principals the primary entities to look in for groups
+     * @param subject the fall back to use for finding groups, may be null
+     * @return a list of (non-mapped) groups
      */
+    @SuppressWarnings("unchecked")
     public List<String> getGroups(Iterable<Principal> principals, Subject subject) {
         List<String> groups = new ArrayList<>();
 
@@ -311,20 +312,20 @@ public class TestRoleMapper {
                 return groups;
             }
         }
-        
-        if(subject == null) {
+
+        if (subject == null) {
             return groups;
-    }
-        
+        }
+
         @SuppressWarnings("rawtypes")
         Set<Hashtable> tables = subject.getPrivateCredentials(Hashtable.class);
         if (tables != null && !tables.isEmpty()) {
             @SuppressWarnings("rawtypes")
             Hashtable table = tables.iterator().next();
-            
+
             groups = (List<String>) table.get("com.ibm.wsspi.security.cred.groups");
-            
-            return groups != null ? groups : Collections.emptyList();
+
+            return groups != null ? groups : emptyList();
         }
 
         return groups;
@@ -339,7 +340,7 @@ public class TestRoleMapper {
     public boolean principalToGroups(Principal principal, List<String> groups) {
         switch (principal.getClass().getName()) {
 
-            case "org.glassfish.security.common.Group": // GlassFish
+            case "org.glassfish.security.common.Group": // GlassFish & Payara
             case "org.apache.geronimo.security.realm.providers.GeronimoGroupPrincipal": // Geronimo
             case "weblogic.security.principal.WLSGroupImpl": // WebLogic
             case "jeus.security.resource.GroupPrincipalImpl": // JEUS
