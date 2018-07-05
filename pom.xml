@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.omnifaces</groupId>
 	<artifactId>jacc-provider-parent</artifactId>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.2</version>
 	<packaging>pom</packaging>
 
 	<prerequisites>
