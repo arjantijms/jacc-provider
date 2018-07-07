@@ -47,5 +47,6 @@
 	<modules>
 		<module>jacc-provider</module>
 		<module>liberty-bundle</module>
+		<module>tomee-bridge</module>
 	</modules>
 </project>
