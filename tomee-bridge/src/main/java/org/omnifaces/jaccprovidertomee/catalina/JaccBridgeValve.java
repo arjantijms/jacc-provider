@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.omnifaces.jaccprovidertomee;
+package org.omnifaces.jaccprovidertomee.catalina;
 
 import java.io.IOException;
 import javax.security.jacc.PolicyContext;
@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.valves.ValveBase;
+import org.omnifaces.jaccprovidertomee.ServletPolicyContextHandler;
 
 /**
  * Catalina Valve that registers the missing PolicyContextHandlers and sets the

@@ -8,7 +8,7 @@ In order to use this, you'll need to:
 * Edit your startup script (e.g. `catalina.sh`) to add the line: `export JAVA_OPTS="$JAVA_OPTS -Djavax.security.jacc.policy.provider=org.omnifaces.jaccprovider.TestPolicy -Djavax.security.jacc.PolicyConfigurationFactory.provider=org.omnifaces.jaccprovider.TestPolicyConfigurationFactory"`
 * Add the following lines to $TOMEE_HOME/conf/server.xml under the `<Engine></Engine>` section:
 ```
-<Valve className="org.omnifaces.jaccprovidertomee.JaccBridgeValve" />
+<Valve className="org.omnifaces.jaccprovidertomee.catalina.JaccBridgeValve" />
 <Listener className="org.omnifaces.jaccprovidertomee.catalina.ContextIdThreadContextListener" />
 ```
 
