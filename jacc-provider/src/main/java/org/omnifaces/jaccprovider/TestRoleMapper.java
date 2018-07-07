@@ -348,6 +348,7 @@ public class TestRoleMapper {
                 break;
 
             case "org.jboss.security.SimpleGroup": // JBoss
+            case "org.apache.openejb.core.security.AbstractSecurityService$Group": // TomEE
                 if (principal.getName().equals("Roles") && principal instanceof Group) {
                     Group rolesGroup = (Group) principal;
                     for (Principal groupPrincipal : list(rolesGroup.members())) {
