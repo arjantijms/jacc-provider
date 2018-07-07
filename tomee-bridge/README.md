@@ -1,4 +1,4 @@
-== JACC Provider TomEE Bridge
+## JACC Provider TomEE Bridge
 
 TomEE enables JACC only for EJB calls, which makes it unusable from Servlet requests. This bridge simulates allows to do some basic stuff as it JACC were really enabled, like getting the Subject for the current request.
 
@@ -12,6 +12,6 @@ In order to use this, you'll need to:
 <Listener className="org.omnifaces.jaccprovidertomee.catalina.ContextIdThreadContextListener" />
 ```
 
-=== Known limitations
+### Known limitations
 
 TomEE only puts the EJB permissions on the PolicyConfiguration, so checking for `WebResourcePermission` won't work. That will need to be provided on a future revision.
