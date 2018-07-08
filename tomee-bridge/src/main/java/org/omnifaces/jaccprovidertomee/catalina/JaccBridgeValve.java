@@ -55,7 +55,7 @@ public class JaccBridgeValve extends ValveBase {
     public void invoke(Request request, Response response) throws IOException, ServletException {
         try {
             // TomEE uses the deployment path as the context ID
-            PolicyContext.setContextID(request.getRealPath(""));
+            PolicyContext.setContextID("file:" + request.getRealPath(""));
 
             ServletPolicyContextHandler.startRequest(request);
             getNext().invoke(request, response);

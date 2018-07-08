@@ -15,6 +15,9 @@
  */
 package org.omnifaces.jaccprovidertomee.catalina;
 
+import javax.security.jacc.PolicyConfiguration;
+import javax.security.jacc.PolicyConfigurationFactory;
+import javax.security.jacc.PolicyContextException;
 import org.apache.catalina.Context;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleEvent;
@@ -29,16 +32,31 @@ public class ParsedWebXmlContextListener implements LifecycleListener {
 
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
-        if (event.getType().equals(Lifecycle.BEFORE_START_EVENT)) {
+        if (!event.getType().equals(Lifecycle.AFTER_START_EVENT)) {
             return;
         }
 
         Context context = (Context) event.getLifecycle();
 
-        SpecSecurityBuilder specSecurityBuilder = new SpecSecurityBuilder(context);
+        // At this point all Servlet registration has been done. It's safe to generate the definitive PolicyConfiguration
+        PolicyConfiguration policyConfiguration;
+        boolean needsCommit;
+        try {
+            String contextId = "file:" + context.getServletContext().getRealPath("");
+            
+            PolicyConfigurationFactory policyConfigurationFactory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 
-        System.out.println("-------" + context.getName() + "--------");
-        System.out.println(specSecurityBuilder.buildSpecSecurityConfig());
-        System.out.println("----------------------------------------");
+            needsCommit = policyConfigurationFactory.inService(contextId);
+            policyConfiguration = policyConfigurationFactory.getPolicyConfiguration(contextId, false);
+
+            SpecSecurityBuilder specSecurityBuilder = new SpecSecurityBuilder(context, policyConfiguration);
+            specSecurityBuilder.buildSpecSecurityConfig();
+
+            if (needsCommit) {
+                policyConfiguration.commit();
+            }
+        } catch (ClassNotFoundException | PolicyContextException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

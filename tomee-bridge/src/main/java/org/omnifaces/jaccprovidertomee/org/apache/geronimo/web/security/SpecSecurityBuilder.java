@@ -15,9 +15,6 @@
  */
 package org.omnifaces.jaccprovidertomee.org.apache.geronimo.web.security;
 
-import java.security.Permission;
-import java.security.PermissionCollection;
-import java.security.Permissions;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +32,6 @@ import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.tomcat.util.descriptor.web.SecurityCollection;
 import org.apache.tomcat.util.descriptor.web.SecurityConstraint;
-import org.omnifaces.jaccprovidertomee.org.apache.geronimo.security.jacc.ComponentPermissions;
 
 /**
  *
@@ -59,18 +55,17 @@ public class SpecSecurityBuilder {
 
     private final Map<String, URLPattern> allMap = new HashMap<String, URLPattern>(); //uncheckedPatterns union excludedPatterns union rolesPatterns.
 
-    private final RecordingPolicyConfiguration policyConfiguration = new RecordingPolicyConfiguration(true);
+    private final Context webAppInfo;
+    private final PolicyConfiguration policyConfiguration;
 
-    private Context webAppInfo;
-
-    public SpecSecurityBuilder(Context webAppInfo) {
+    public SpecSecurityBuilder(Context webAppInfo, PolicyConfiguration policyConfiguration) {
         this.webAppInfo = webAppInfo;
+        this.policyConfiguration = policyConfiguration;
     }
 
-    public ComponentPermissions buildSpecSecurityConfig() {
+    public void buildSpecSecurityConfig() {
         securityRoles.addAll(Arrays.asList(webAppInfo.findSecurityRoles()));
 
-        //webAppInfo.find
         try {
             for (Container container : webAppInfo.findChildren()) {
                 if (container instanceof Wrapper) {
@@ -83,7 +78,7 @@ public class SpecSecurityBuilder {
             addUnmappedJSPPermissions();
             analyzeSecurityConstraints(Arrays.asList(webAppInfo.findConstraints()));
             removeExcludedDups();
-            return buildComponentPermissions();
+            buildComponentPermissions();
         } catch (PolicyContextException e) {
             throw new IllegalStateException("Should not happen", e);
         }
@@ -200,7 +195,7 @@ public class SpecSecurityBuilder {
         }
     }
 
-    private ComponentPermissions buildComponentPermissions() throws PolicyContextException {
+    private void buildComponentPermissions() throws PolicyContextException {
         for (URLPattern pattern : excludedPatterns.values()) {
             String name = pattern.getQualifiedPattern(allSet);
             String actions = pattern.getMethods();
@@ -268,7 +263,6 @@ public class SpecSecurityBuilder {
             String actions = URLPattern.getMethodsWithTransport(methods, item.getTransportType());
             policyConfiguration.addToUncheckedPolicy(new WebUserDataPermission(item.getName(), actions));
         }
-        return policyConfiguration.getComponentPermissions();
     }
 
     private void addOrUpdatePattern(Map<UncheckedItem, HTTPMethods> patternMap, String name, HTTPMethods actions, int transportType) {
@@ -317,105 +311,5 @@ public class SpecSecurityBuilder {
         rolesPatterns.clear();
         allSet.clear();
         allMap.clear();
-    }
-
-    private static class RecordingPolicyConfiguration implements PolicyConfiguration {
-
-        private final PermissionCollection excludedPermissions = new Permissions();
-
-        private final PermissionCollection uncheckedPermissions = new Permissions();
-
-        private final Map<String, PermissionCollection> rolePermissions = new HashMap<String, PermissionCollection>();
-
-        private final StringBuilder audit;
-
-        private RecordingPolicyConfiguration(boolean audit) {
-            if (audit) {
-                this.audit = new StringBuilder();
-            } else {
-                this.audit = null;
-            }
-        }
-
-        public String getContextID() throws PolicyContextException {
-            return null;
-        }
-
-        public void addToRole(String roleName, PermissionCollection permissions) {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void addToRole(String roleName, Permission permission) throws PolicyContextException {
-            if (audit != null) {
-                audit.append("Role: ").append(roleName).append(" -> ").append(permission).append('\n');
-            }
-            PermissionCollection permissionsForRole = rolePermissions.get(roleName);
-            if (permissionsForRole == null) {
-                permissionsForRole = new Permissions();
-                rolePermissions.put(roleName, permissionsForRole);
-            }
-            permissionsForRole.add(permission);
-        }
-
-        public void addToUncheckedPolicy(PermissionCollection permissions) {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void addToUncheckedPolicy(Permission permission) throws PolicyContextException {
-            if (audit != null) {
-                audit.append("Unchecked -> ").append(permission).append('\n');
-            }
-            uncheckedPermissions.add(permission);
-        }
-
-        public void addToExcludedPolicy(PermissionCollection permissions) {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void addToExcludedPolicy(Permission permission) throws PolicyContextException {
-            if (audit != null) {
-                audit.append("Excluded -> ").append(permission).append('\n');
-            }
-            excludedPermissions.add(permission);
-        }
-
-        public void removeRole(String roleName) throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void removeUncheckedPolicy() throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void removeExcludedPolicy() throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void linkConfiguration(PolicyConfiguration link) throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void delete() throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public void commit() throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public boolean inService() throws PolicyContextException {
-            throw new IllegalStateException("not implemented");
-        }
-
-        public ComponentPermissions getComponentPermissions() {
-            return new ComponentPermissions(excludedPermissions, uncheckedPermissions, rolePermissions);
-        }
-
-        public String getAudit() {
-            if (audit == null) {
-                return "no audit kept";
-            }
-            return audit.toString();
-        }
     }
 }
