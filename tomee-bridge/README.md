@@ -11,6 +11,10 @@ In order to use this, you'll need to:
 <Valve className="org.omnifaces.jaccprovidertomee.catalina.JaccBridgeValve" />
 <Listener className="org.omnifaces.jaccprovidertomee.catalina.ContextIdThreadContextListener" />
 ```
+* Add the following line to $TOMEE_HOME/conf/context.xml under the `<Context></Context>` section:
+```
+<Listener className="org.omnifaces.jaccprovidertomee.catalina.ParsedWebXmlContextListener" />
+```
 
 ### Known limitations
 
