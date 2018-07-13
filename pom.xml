@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.omnifaces</groupId>
-	<artifactId>jacc-provider-parent</artifactId>
-	<version>0.2</version>
-	<packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"> <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>org.omnifaces</groupId>
+    <artifactId>jacc-provider-parent</artifactId>
+    <version>0.3</version>
+    <packaging>pom</packaging>
 
-	<prerequisites>
-		<maven>3.0.0</maven>
-	</prerequisites>
-	
-	<url>http://omnifaces.org</url>
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+    <url>http://omnifaces.org</url>
 
 	<developers>
 		<developer>
@@ -18,6 +25,10 @@
 			<name>Arjan Tijms</name>
 			<email>arjan.tijms@gmail.com</email>
 		</developer>
+        <developer>
+            <id>ggam</id>
+            <name>Guillermo González de Agüero</name>
+        </developer>
 	</developers>
 	
 	<organization>
@@ -36,13 +47,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-	</properties>
 	
 	<modules>
 		<module>jacc-provider</module>
