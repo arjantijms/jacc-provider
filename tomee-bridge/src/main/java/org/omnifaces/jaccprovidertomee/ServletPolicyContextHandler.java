@@ -96,7 +96,8 @@ public class ServletPolicyContextHandler implements PolicyContextHandler {
         Set<Principal> principals = new HashSet<>();
         
         Principal userPrincipal = request.getPrincipal();
-        principals.add(request.getPrincipal());
+        principals.add(request.getPrincipal()); // Container Principal
+        principals.add(request.getUserPrincipal()); // Possibly different Application Principal
         
         
         Group groups = new Group("Roles");
