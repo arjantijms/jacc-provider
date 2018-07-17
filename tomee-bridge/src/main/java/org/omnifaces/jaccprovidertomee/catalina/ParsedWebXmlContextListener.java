@@ -30,6 +30,8 @@ import org.omnifaces.jaccprovidertomee.org.apache.geronimo.web.security.SpecSecu
  */
 public class ParsedWebXmlContextListener implements LifecycleListener {
 
+    public static final String CONTEXT_ID_ATTRIBUTE = "org.omnifaces.jaccprovidertomee.policycontextid";
+    
     @Override
     public void lifecycleEvent(LifecycleEvent event) {
         if (!event.getType().equals(Lifecycle.AFTER_START_EVENT)) {
@@ -42,7 +44,9 @@ public class ParsedWebXmlContextListener implements LifecycleListener {
         PolicyConfiguration policyConfiguration;
         boolean needsCommit;
         try {
-            String contextId = "file:" + context.getServletContext().getRealPath("");
+            String separator = System.getProperty("os.name").startsWith("Windows") ? "/" : "";
+            String contextId = "file:" + separator + context.getServletContext().getRealPath("").replace("\\", "/");
+            context.getServletContext().setAttribute(CONTEXT_ID_ATTRIBUTE, contextId);
             
             PolicyConfigurationFactory policyConfigurationFactory = PolicyConfigurationFactory.getPolicyConfigurationFactory();
 
